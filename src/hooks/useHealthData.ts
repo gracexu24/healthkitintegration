@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Platform } from 'react-native';
 import AppleHealthKit, {
   HealthInputOptions,
   HealthKitPermissions,
@@ -25,12 +26,33 @@ const useHealthData = (date: Date) => {
   const [distance, setDistance] = useState(0);
 
   useEffect(() => {
-    AppleHealthKit.initHealthKit(permissions, (err) => {
+    // CRITICAL: Only run on iOS platform
+    if (Platform.OS !== 'ios') {
+      console.log('HealthKit only available on iOS');
+      return;
+    }
+
+    // Check if HealthKit is available (fails on simulator)
+    AppleHealthKit.isAvailable((err, isAvailable) => {
       if (err) {
-        console.log('Error getting permissions');
+        console.log('Error checking HealthKit availability:', err);
         return;
       }
-      setHasPermission(true);
+      
+      if (!isAvailable) {
+        console.log('HealthKit not available - running on simulator or HealthKit disabled');
+        return;
+      }
+
+      // Initialize HealthKit with permissions
+      AppleHealthKit.initHealthKit(permissions, (err) => {
+        if (err) {
+          console.log('Error initializing HealthKit:', err);
+          return;
+        }
+        console.log('HealthKit initialized successfully');
+        setHasPermission(true);
+      });
     });
   }, []);
 
@@ -38,14 +60,16 @@ const useHealthData = (date: Date) => {
     if (!hasPermissions) {
       return;
     }
+
+    // CRITICAL: Use the date parameter, not new Date()
     const options: HealthInputOptions = {
-      date: new Date().toISOString(),
+      date: date.toISOString(), // Use the passed date parameter
       includeManuallyAdded: false,
     };
-    
+
     AppleHealthKit.getStepCount(options, (err, results) => {
       if (err) {
-        console.log('Error getting the steps');
+        console.log('Error getting steps:', err);
         return;
       }
       setSteps(results.value);
@@ -53,7 +77,7 @@ const useHealthData = (date: Date) => {
 
     AppleHealthKit.getFlightsClimbed(options, (err, results) => {
       if (err) {
-        console.log('Error getting the steps:', err);
+        console.log('Error getting flights climbed:', err);
         return;
       }
       setFlights(results.value);
@@ -61,14 +85,12 @@ const useHealthData = (date: Date) => {
 
     AppleHealthKit.getDistanceWalkingRunning(options, (err, results) => {
       if (err) {
-        console.log('Error getting the steps:', err);
+        console.log('Error getting distance:', err);
         return;
       }
       setDistance(results.value);
     });
-  
-    // Query Health data
-  }, [hasPermissions, date]);
+  }, [hasPermissions, date]); // CRITICAL: Include date in dependencies
 
   return { steps, flights, distance };
 };

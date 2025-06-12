@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -14,7 +14,11 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.sample"
+      "bundleIdentifier": "com.grace.sachihealth",
+      "infoPlist": {
+        "NSHealthShareUsageDescription": "This app needs access to read your health data including steps, distance, and flights climbed to display your daily activity.",
+        "NSHealthUpdateUsageDescription": "This app needs access to update your health data."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -27,7 +31,11 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "react-native-health"
+      "expo-dev-client",
+      ["react-native-health", {
+        "healthSharePermission": "This app needs access to read your health data including steps, distance, and flights climbed to display your daily activity.",
+        "healthUpdatePermission": "This app needs access to update your health data."
+      }]
     ]
   }
 }

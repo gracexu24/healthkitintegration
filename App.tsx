@@ -1,20 +1,21 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { AntDesign } from '@expo/vector-icons';
 import useHealthData from './src/hooks/useHealthData';
 import Value from './src/components/Value';
 
 export default function App() {
   const [date, setDate] = useState(new Date());
+  const { steps, flights, distance } = useHealthData(date);
 
-	const changeDate = (numDays) => {
+  const changeDate = (numDays: number) => {
     const currentDate = new Date(date); // Create a copy of the current date
     // Update the date by adding/subtracting the number of days
     currentDate.setDate(currentDate.getDate() + numDays);
 
     setDate(currentDate); // Update the state variable
   };
-    setDate(currentDate); 
-  const {steps, distance, flights} = useHealthData(date);
 
 	console.log(`Steps: ${steps} | Distance: ${distance}m | Flights: ${flights}`);
   return (
@@ -63,5 +64,17 @@ const styles = StyleSheet.create({
     gap: 25,
     flexWrap: 'wrap',
     marginTop: 100,
+  },
+  datePicker: {
+    alignItems: 'center',
+    padding: 20,
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  date: {
+    color: 'white',
+    fontWeight: '500',
+    fontSize: 20,
+    marginHorizontal: 20,
   },
 });

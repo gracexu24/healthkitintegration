@@ -16,7 +16,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.grace.sachihealth",
       "infoPlist": {
-        "NSHealthShareUsageDescription": "This app needs access to read your health data including steps, distance, and flights climbed to display your daily activity.",
+        "NSHealthShareUsageDescription": "This app needs access to read your health data including steps, distance, flights climbed, weight, sleep, and calories burned to display your daily activity.",
         "NSHealthUpdateUsageDescription": "This app needs access to update your health data."
       }
     },
@@ -36,7 +36,7 @@
       [
         "react-native-health",
         {
-          "healthSharePermission": "This app needs access to read your health data including steps, distance, and flights climbed to display your daily activity.",
+          "healthSharePermission": "This app needs access to read your health data including steps, distance, flights climbed, weight, sleep, and calories burned to display your daily activity.",
           "healthUpdatePermission": "This app needs access to update your health data."
         }
       ]

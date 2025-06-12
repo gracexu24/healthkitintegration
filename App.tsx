@@ -7,7 +7,7 @@ import Value from './src/components/Value';
 
 export default function App() {
   const [date, setDate] = useState(new Date());
-  const { steps, flights, distance } = useHealthData(date);
+  const { steps, flights, distance, weight, sleepHours, caloriesBurned } = useHealthData(date);
 
   const changeDate = (numDays: number) => {
     const currentDate = new Date(date);
@@ -16,13 +16,13 @@ export default function App() {
     setDate(currentDate); 
   };
 
-	console.log(`Steps: ${steps} | Distance: ${distance}m | Flights: ${flights}`);
+	console.log(`Steps: ${steps} | Distance: ${distance}m | Flights: ${flights} | Weight: ${weight}kg | Sleep: ${sleepHours}h | Calories: ${caloriesBurned}`);
   return (
     
     <View style={styles.container}>
       <StatusBar style="light" />
       
-      <Text style={styles.title}>Test Activity</Text>
+      <Text style={styles.title}>Health Activity</Text>
 
       <View style={styles.datePicker}>
         <AntDesign
@@ -45,6 +45,9 @@ export default function App() {
         <Value label="Steps" value={steps.toString()} />
         <Value label="Distance" value={`${(distance / 1000).toFixed(2)} km`} />
         <Value label="Flights Climbed" value={flights.toString()} />
+        <Value label="Weight" value={`${weight.toFixed(1)} kg`} />
+        <Value label="Sleep" value={`${sleepHours.toFixed(1)} hrs`} />
+        <Value label="Calories Burned" value={`${Math.round(caloriesBurned)}`} />
       </View>
 
     </View>
@@ -68,10 +71,11 @@ const styles = StyleSheet.create({
   },
   values: {
     flexDirection: 'row',
-    gap: 25,
+    gap: 15,
     flexWrap: 'wrap',
     marginTop: 50,
     justifyContent: 'center',
+    paddingHorizontal: 20,
   },
   datePicker: {
     alignItems: 'center',

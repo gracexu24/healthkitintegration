@@ -25,17 +25,21 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.grace.sachihealth"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-dev-client",
-      ["react-native-health", {
-        "healthSharePermission": "This app needs access to read your health data including steps, distance, and flights climbed to display your daily activity.",
-        "healthUpdatePermission": "This app needs access to update your health data."
-      }]
+      [
+        "react-native-health",
+        {
+          "healthSharePermission": "This app needs access to read your health data including steps, distance, and flights climbed to display your daily activity.",
+          "healthUpdatePermission": "This app needs access to update your health data."
+        }
+      ]
     ]
   }
 }

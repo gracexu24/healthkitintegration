@@ -26,31 +26,35 @@ const useHealthData = (date: Date) => {
   const [distance, setDistance] = useState(0);
 
   useEffect(() => {
+    console.log('Initializing HealthKit...');
+    
     // CRITICAL: Only run on iOS platform
     if (Platform.OS !== 'ios') {
-      console.log('HealthKit only available on iOS');
+      console.log('ERROR: Not on iOS platform');
       return;
     }
 
     // Check if HealthKit is available (fails on simulator)
     AppleHealthKit.isAvailable((err, isAvailable) => {
       if (err) {
-        console.log('Error checking HealthKit availability:', err);
+        console.log('ERROR: Error checking HealthKit availability:', err);
         return;
       }
       
       if (!isAvailable) {
-        console.log('HealthKit not available - running on simulator or HealthKit disabled');
+        console.log('ERROR: HealthKit not available - running on simulator or HealthKit disabled');
         return;
       }
+
+      console.log('SUCCESS: HealthKit is available');
 
       // Initialize HealthKit with permissions
       AppleHealthKit.initHealthKit(permissions, (err) => {
         if (err) {
-          console.log('Error initializing HealthKit:', err);
+          console.log('ERROR: Error initializing HealthKit:', err);
           return;
         }
-        console.log('HealthKit initialized successfully');
+        console.log('SUCCESS: HealthKit initialized successfully');
         setHasPermission(true);
       });
     });
@@ -58,8 +62,11 @@ const useHealthData = (date: Date) => {
 
   useEffect(() => {
     if (!hasPermissions) {
+      console.log('WAITING: Waiting for HealthKit permissions...');
       return;
     }
+
+    console.log('FETCHING: Health data for:', date.toDateString());
 
     // CRITICAL: Use the date parameter, not new Date()
     const options: HealthInputOptions = {
@@ -67,27 +74,33 @@ const useHealthData = (date: Date) => {
       includeManuallyAdded: false,
     };
 
+    console.log('FETCHING: Steps...');
     AppleHealthKit.getStepCount(options, (err, results) => {
       if (err) {
-        console.log('Error getting steps:', err);
+        console.log('ERROR: Error getting steps:', err);
         return;
       }
+      console.log('SUCCESS: Steps received:', results.value);
       setSteps(results.value);
     });
 
+    console.log('FETCHING: Flights climbed...');
     AppleHealthKit.getFlightsClimbed(options, (err, results) => {
       if (err) {
-        console.log('Error getting flights climbed:', err);
+        console.log('ERROR: Error getting flights climbed:', err);
         return;
       }
+      console.log('SUCCESS: Flights received:', results.value);
       setFlights(results.value);
     });
 
+    console.log('FETCHING: Distance...');
     AppleHealthKit.getDistanceWalkingRunning(options, (err, results) => {
       if (err) {
-        console.log('Error getting distance:', err);
+        console.log('ERROR: Error getting distance:', err);
         return;
       }
+      console.log('SUCCESS: Distance received:', results.value);
       setDistance(results.value);
     });
   }, [hasPermissions, date]); // CRITICAL: Include date in dependencies

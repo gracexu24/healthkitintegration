@@ -21,14 +21,15 @@ export default function App() {
   return (
     
     <View style={styles.container}>
-      <Text>Testing!</Text>
-      <StatusBar style="auto" />
+      <StatusBar style="light" />
+      
+      <Text style={styles.title}>Test Activity</Text>
 
       <View style={styles.datePicker}>
         <AntDesign
           onPress={() => changeDate(-1)}
           name="left"
-          size={20}
+          size={24}
           color="#C3FF53"
         />
         <Text style={styles.date}>{date.toDateString()}</Text>
@@ -36,7 +37,7 @@ export default function App() {
         <AntDesign
           onPress={() => changeDate(1)}
           name="right"
-          size={20}
+          size={24}
           color="#C3FF53"
         />
       </View>
@@ -55,26 +56,37 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#000',
     alignItems: 'center',
     justifyContent: 'center',
+    paddingTop: 50,
+  },
+  title: {
+    color: '#fff',
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 30,
   },
   values: {
     flexDirection: 'row',
     gap: 25,
     flexWrap: 'wrap',
-    marginTop: 100,
+    marginTop: 50,
+    justifyContent: 'center',
   },
   datePicker: {
     alignItems: 'center',
     padding: 20,
     flexDirection: 'row',
     justifyContent: 'center',
+    backgroundColor: '#1a1a1a',
+    borderRadius: 15,
+    marginHorizontal: 20,
   },
   date: {
-    color: 'white',
-    fontWeight: '500',
-    fontSize: 20,
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 18,
     marginHorizontal: 20,
   },
 });

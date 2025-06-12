@@ -6,21 +6,33 @@ type ValueProps = {
 };
 
 const Value = ({ label, value }: ValueProps) => (
-  <View>
+  <View style={styles.container}>
     <Text style={styles.label}>{label}</Text>
     <Text style={styles.value}>{value}</Text>
   </View>
 );
 
 const styles = StyleSheet.create({
+  container: {
+    backgroundColor: '#1a1a1a',
+    padding: 20,
+    borderRadius: 15,
+    minWidth: 100,
+    alignItems: 'center',
+    marginVertical: 5,
+  },
   label: {
-    color: 'white',
-    fontSize: 20,
+    color: '#C3FF53',
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 8,
+    textAlign: 'center',
   },
   value: {
-    fontSize: 45,
-    color: '#AFB3BE',
-    fontWeight: '500',
+    fontSize: 32,
+    color: '#fff',
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 

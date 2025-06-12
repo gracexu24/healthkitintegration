@@ -10,11 +10,10 @@ export default function App() {
   const { steps, flights, distance } = useHealthData(date);
 
   const changeDate = (numDays: number) => {
-    const currentDate = new Date(date); // Create a copy of the current date
-    // Update the date by adding/subtracting the number of days
+    const currentDate = new Date(date);
     currentDate.setDate(currentDate.getDate() + numDays);
 
-    setDate(currentDate); // Update the state variable
+    setDate(currentDate); 
   };
 
 	console.log(`Steps: ${steps} | Distance: ${distance}m | Flights: ${flights}`);

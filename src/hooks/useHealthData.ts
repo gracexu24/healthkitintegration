@@ -28,13 +28,10 @@ const useHealthData = (date: Date) => {
   useEffect(() => {
     console.log('Initializing HealthKit...');
     
-    // CRITICAL: Only run on iOS platform
     if (Platform.OS !== 'ios') {
       console.log('ERROR: Not on iOS platform');
       return;
     }
-
-    // Check if HealthKit is available (fails on simulator)
     AppleHealthKit.isAvailable((err, isAvailable) => {
       if (err) {
         console.log('ERROR: Error checking HealthKit availability:', err);
@@ -68,9 +65,8 @@ const useHealthData = (date: Date) => {
 
     console.log('FETCHING: Health data for:', date.toDateString());
 
-    // CRITICAL: Use the date parameter, not new Date()
     const options: HealthInputOptions = {
-      date: date.toISOString(), // Use the passed date parameter
+      date: date.toISOString(),
       includeManuallyAdded: false,
     };
 
@@ -103,8 +99,7 @@ const useHealthData = (date: Date) => {
       console.log('SUCCESS: Distance received:', results.value);
       setDistance(results.value);
     });
-  }, [hasPermissions, date]); // CRITICAL: Include date in dependencies
-
+  }, [hasPermissions, date]); 
   return { steps, flights, distance };
 };
 

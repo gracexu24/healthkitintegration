@@ -9,7 +9,19 @@ import DataCard from './src/components/DataCard';
 
 export default function App() {
   const [date, setDate] = useState(new Date());
-  const { steps, flights, distance, weight, sleep, caloriesBurned, BMI, workouts } = useHealthData(date);
+  const { 
+    steps, 
+    flights, 
+    distance, 
+    weight, 
+    sleep, 
+    caloriesBurned, 
+    BMI, 
+    workouts, 
+    bloodGlucose,
+    bodyFat,
+    muscleMass
+  } = useHealthData(date);
 
   const changeDate = (numDays: number) => {
     const newDate = new Date(date);
@@ -42,14 +54,73 @@ export default function App() {
       </View>
 
       <View style={styles.dataContainer}>
-        <DataCard title="Steps" value={steps} />
-        <DataCard title="Flights" value={flights} />
-        <DataCard title="Distance" value={distance} unit="km" />
-        <DataCard title="Weight" value={weight} unit="kg" />
+        <DataCard title="Steps" value={steps.value} />
+        <DataCard title="Flights" value={flights.value} />
+        <DataCard title="Distance" value={distance.value} unit="km" />
+        <DataCard title="Weight" value={weight.value} unit="kg" />
         <DataCard title="Sleep" value={sleep.totalTimeAsleep / 60} unit="hrs" />
-        <DataCard title="Calories" value={caloriesBurned} />
-        <DataCard title="BMI" value={BMI} />
+        <DataCard title="Calories" value={caloriesBurned.value} />
+        <DataCard title="BMI" value={BMI.value} />
+        <DataCard 
+          title="Blood Glucose" 
+          value={bloodGlucose.value} 
+          unit={bloodGlucose.unit}
+        />
+        <DataCard 
+          title="Body Fat" 
+          value={bodyFat.value} 
+          unit={bodyFat.unit}
+        />
+        <DataCard 
+          title="Muscle Mass" 
+          value={muscleMass.value} 
+          unit={muscleMass.unit}
+        />
       </View>
+
+      <View style={styles.messagesContainer}>
+        {(steps.message || flights.message || distance.message || weight.message || 
+          caloriesBurned.message || BMI.message || bloodGlucose.message || 
+          bodyFat.message || muscleMass.message) && (
+          <View style={styles.messageBox}>
+            {steps.message && (
+              <Text style={styles.messageText}>{steps.message}</Text>
+            )}
+            {flights.message && (
+              <Text style={styles.messageText}>{flights.message}</Text>
+            )}
+            {distance.message && (
+              <Text style={styles.messageText}>{distance.message}</Text>
+            )}
+            {weight.message && (
+              <Text style={styles.messageText}>{weight.message}</Text>
+            )}
+            {caloriesBurned.message && (
+              <Text style={styles.messageText}>{caloriesBurned.message}</Text>
+            )}
+            {BMI.message && (
+              <Text style={styles.messageText}>{BMI.message}</Text>
+            )}
+            {bloodGlucose.message && (
+              <Text style={styles.messageText}>{bloodGlucose.message}</Text>
+            )}
+            {bodyFat.message && (
+              <Text style={styles.messageText}>{bodyFat.message}</Text>
+            )}
+            {muscleMass.message && (
+              <Text style={styles.messageText}>{muscleMass.message}</Text>
+            )}
+          </View>
+        )}
+      </View>
+
+      {bloodGlucose.value > 0 && (
+        <View style={styles.bloodGlucoseContainer}>
+          <Text style={styles.bloodGlucoseTime}>
+            Last reading: {bloodGlucose.date}
+          </Text>
+        </View>
+      )}
 
       <View style={styles.workoutContainer}>
         <Text style={styles.workoutTitle}>Workouts</Text>
@@ -57,10 +128,12 @@ export default function App() {
           workouts.map((workout, index) => (
             <View key={index} style={styles.workoutCard}>
               <Text style={styles.workoutName}>{workout.activityName}</Text>
-              <Text>Calories: {workout.calories}</Text>
+              <Text style={styles.workoutTime}>
+                {workout.startDate} - {workout.endDate}
+              </Text>
+              <Text>Calories: {workout.calories.toFixed(0)}</Text>
               <Text>Source: {workout.sourceName}</Text>
-              <Text>Start: {workout.startDate}</Text>
-              <Text>End: {workout.endDate}</Text>
+              <Text>Duration: {workout.duration} min</Text>
               {workout.heartRate.average > 0 && (
                 <View style={styles.heartRateContainer}>
                   <Text>Heart Rate:</Text>
@@ -158,23 +231,31 @@ const styles = StyleSheet.create({
   },
   workoutCard: {
     backgroundColor: '#f0f0f0',
-    padding: 10,
+    padding: 15,
     borderRadius: 8,
     marginBottom: 8,
   },
   workoutName: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 5,
   },
+  workoutTime: {
+    fontSize: 16,
+    color: '#666',
+    marginBottom: 5,
+  },
   heartRateContainer: {
-    flexDirection: 'row',
-    gap: 5,
+    marginTop: 5,
+    padding: 5,
+    backgroundColor: '#fff',
+    borderRadius: 4,
   },
   noWorkouts: {
     textAlign: 'center',
     color: '#666',
     fontStyle: 'italic',
+    padding: 10,
   },
   sleepContainer: {
     marginTop: 20,
@@ -187,7 +268,7 @@ const styles = StyleSheet.create({
   },
   sleepCard: {
     backgroundColor: '#f0f0f0',
-    padding: 10,
+    padding: 15,
     borderRadius: 8,
     marginBottom: 8,
   },
@@ -200,5 +281,37 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#666',
     fontStyle: 'italic',
+    padding: 10,
+  },
+  bloodGlucoseContainer: {
+    alignItems: 'center',
+    marginTop: 5,
+    marginBottom: 10,
+  },
+  bloodGlucoseTime: {
+    fontSize: 14,
+    color: '#666',
+    fontStyle: 'italic',
+  },
+  messagesContainer: {
+    alignItems: 'center',
+    marginTop: 5,
+    marginBottom: 10,
+    paddingHorizontal: 20,
+  },
+  messageBox: {
+    backgroundColor: '#f8f8f8',
+    borderRadius: 8,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    width: '100%',
+  },
+  messageText: {
+    fontSize: 14,
+    color: '#666',
+    fontStyle: 'italic',
+    textAlign: 'center',
+    marginBottom: 5,
   },
 });

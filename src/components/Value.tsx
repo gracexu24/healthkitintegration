@@ -2,13 +2,17 @@ import { StyleSheet, Text, View } from 'react-native';
 
 type ValueProps = {
   label: string;
-  value: string;
+  value: string | number;
+  unit?: string;
 };
 
-const Value = ({ label, value }: ValueProps) => (
+const Value = ({ label, value, unit }: ValueProps) => (
   <View style={styles.container}>
     <Text style={styles.label}>{label}</Text>
-    <Text style={styles.value}>{value}</Text>
+    <Text style={styles.value}>
+      {typeof value === 'number' ? value.toLocaleString() : value}
+      {unit ? ` ${unit}` : ''}
+    </Text>
   </View>
 );
 

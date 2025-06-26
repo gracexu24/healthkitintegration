@@ -26,6 +26,7 @@ const permissions: HealthKitPermissions = {
       Permissions.BloodGlucose,
       Permissions.BodyFatPercentage,
       Permissions.LeanBodyMass,
+      Permissions.BodyMassIndex,
     ],
     write: [
       Permissions.Weight,
@@ -236,12 +237,12 @@ const useHealthData = (date: Date) => {
     // Steps
     console.log('FETCHING: Steps...');
     const stepsOptions = {
-      startDate: new Date(date.getFullYear(), date.getMonth(), date.getDate()).toISOString(),
-      endDate: new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1).toISOString(),
-      includeManuallyAdded: true
+      date: date.toISOString(),
+      includeManuallyAdded: false,
+    
     };
     
-    AppleHealthKit.getStepCount(stepsOptions, (err: string | null, results: any) => {
+    AppleHealthKit.getStepCount(stepsOptions, (err, results) => {
       if (err) {
         console.log('ERROR: Error getting steps:', err);
         setSteps({
@@ -254,7 +255,7 @@ const useHealthData = (date: Date) => {
       if (results && results.value !== undefined) {
         console.log('SUCCESS: Steps received:', results.value);
         setSteps({
-          value: results.value,
+          value: results.value + 200,
           message: '',
         });
       } else {
@@ -269,8 +270,7 @@ const useHealthData = (date: Date) => {
     // Flights
     console.log('FETCHING: Flights...');
     const flightsOptions = {
-      startDate: new Date(date.getFullYear(), date.getMonth(), date.getDate()).toISOString(),
-      endDate: new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1).toISOString(),
+      date: new Date(date.getFullYear(), date.getMonth(), date.getDate()).toISOString(),
       includeManuallyAdded: true
     };
     
@@ -302,8 +302,8 @@ const useHealthData = (date: Date) => {
     // Distance
     console.log('FETCHING: Distance...');
     const distanceOptions = {
-      startDate: new Date(date.getFullYear(), date.getMonth(), date.getDate()).toISOString(),
-      endDate: new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1).toISOString(),
+      unit: 'mile' as HealthUnit,
+      date: new Date(date.getFullYear(), date.getMonth(), date.getDate()).toISOString(),
       includeManuallyAdded: true
     };
     
@@ -337,7 +337,7 @@ const useHealthData = (date: Date) => {
     const weightOptions = {
       startDate: new Date(date.getFullYear(), date.getMonth(), date.getDate()).toISOString(),
       endDate: new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1).toISOString(),
-      unit: 'kg' as HealthUnit,
+      unit: 'lbs' as HealthUnit,
       includeManuallyAdded: true
     };
     
@@ -604,7 +604,7 @@ const useHealthData = (date: Date) => {
       if (err) {
         console.log('ERROR: Error getting calories:', err);
         setCaloriesBurned({
-          value: 0,
+          value: 0 + 1,
           message: 'Error fetching calories burned data',
         });
         return;
@@ -630,10 +630,9 @@ const useHealthData = (date: Date) => {
     // Blood Glucose
     console.log('FETCHING: Blood Glucose...');
     const bloodGlucoseOptions = {
+      unit: 'mgPerdL' as HealthUnit,
       startDate: new Date(date.getFullYear(), date.getMonth(), date.getDate()).toISOString(),
-      endDate: new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1).toISOString(),
-      unit: 'mg/dL' as HealthUnit,
-      includeManuallyAdded: true
+      endDate: new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1).toISOString()
     };
     
     AppleHealthKit.getBloodGlucoseSamples(bloodGlucoseOptions, (err: string | null, results: any[]) => {
@@ -658,10 +657,6 @@ const useHealthData = (date: Date) => {
         let glucoseValue = latestReading.value;
         let glucoseUnit = latestReading.unit;
         
-        if (glucoseUnit === 'mmol/L') {
-          glucoseValue = glucoseValue * 18; // Convert mmol/L to mg/dL
-          glucoseUnit = 'mg/dL';
-        }
         
         setBloodGlucose({
           value: glucoseValue,
@@ -685,7 +680,6 @@ const useHealthData = (date: Date) => {
     const bodyFatOptions = {
       startDate: new Date(date.getFullYear(), date.getMonth(), date.getDate()).toISOString(),
       endDate: new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1).toISOString(),
-      unit: 'percent' as HealthUnit,
       includeManuallyAdded: true
     };
     
@@ -705,8 +699,8 @@ const useHealthData = (date: Date) => {
         const latestReading = results[0];
         console.log('SUCCESS: Body fat received:', latestReading);
         setBodyFat({
-          value: latestReading.value,
-          unit: latestReading.unit || '%',
+          value: latestReading.value*100,
+          unit: latestReading.unit || "%",
           date: new Date(latestReading.startDate).toLocaleTimeString(),
           message: '',
         });
@@ -724,7 +718,7 @@ const useHealthData = (date: Date) => {
     // Muscle Mass
     console.log('FETCHING: Muscle Mass...');
     const muscleMassOptions = {
-      unit: 'kg' as HealthUnit,
+      unit: 'lbs' as HealthUnit,
       includeManuallyAdded: true
     };
     
@@ -744,7 +738,7 @@ const useHealthData = (date: Date) => {
         console.log('SUCCESS: Muscle mass received:', results);
         setMuscleMass({
           value: results.value,
-          unit: results.unit || 'kg',
+          unit: results.unit || 'lbs',
           date: new Date().toLocaleTimeString(),
           message: '',
         });

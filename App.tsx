@@ -64,8 +64,8 @@ export default function App() {
       <View style={styles.dataContainer}>
         <DataCard title="Steps" value={steps.value} />
         <DataCard title="Flights" value={flights.value} />
-        <DataCard title="Distance" value={distance.value} unit="km" />
-        <DataCard title="Weight" value={weight.value} unit="kg" />
+        <DataCard title="Distance" value={distance.value} unit="mi" />
+        <DataCard title="Weight" value={weight.value} unit="lbs" />
         <DataCard title="Sleep" value={sleep.totalTimeAsleep / 60} unit="hrs" />
         <DataCard title="Calories" value={caloriesBurned.value} />
         <DataCard title="BMI" value={BMI.value} unit="" />

@@ -14,7 +14,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.grace.sachihealth",
+      "bundleIdentifier": "com.grace.sachihealthtest",
       "infoPlist": {
         "NSHealthShareUsageDescription": "This app needs access to read your health data including steps, distance, flights climbed, weight, sleep, and calories burned to display your daily activity.",
         "NSHealthUpdateUsageDescription": "This app needs access to update your health data."

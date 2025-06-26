@@ -20,7 +20,8 @@ export default function App() {
     workouts, 
     bloodGlucose,
     bodyFat,
-    muscleMass
+    muscleMass,
+    refreshData
   } = useHealthData(date);
 
   const changeDate = (numDays: number) => {
@@ -51,6 +52,13 @@ export default function App() {
           size={24}
           color="#C3FF53"
         />
+        <AntDesign
+          onPress={refreshData}
+          name="reload1"
+          size={24}
+          color="#C3FF53"
+          style={{ marginLeft: 20 }}
+        />
       </View>
 
       <View style={styles.dataContainer}>
@@ -60,7 +68,7 @@ export default function App() {
         <DataCard title="Weight" value={weight.value} unit="kg" />
         <DataCard title="Sleep" value={sleep.totalTimeAsleep / 60} unit="hrs" />
         <DataCard title="Calories" value={caloriesBurned.value} />
-        <DataCard title="BMI" value={BMI.value} />
+        <DataCard title="BMI" value={BMI.value} unit="" />
         <DataCard 
           title="Blood Glucose" 
           value={bloodGlucose.value} 

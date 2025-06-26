@@ -81,6 +81,7 @@ type Sleep = {
 
 const useHealthData = (date: Date) => {
   const [hasPermissions, setHasPermission] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [steps, setSteps] = useState<{
     value: number;
     message: string;
@@ -224,7 +225,8 @@ const useHealthData = (date: Date) => {
       return;
     }
 
-    console.log('FETCHING: Health data for:', date.toDateString());
+    console.log('FETCHING: Health data for:', date.toDateString(), '| Refresh trigger:', refreshTrigger);
+    console.log('PERMISSIONS: Has permissions:', hasPermissions);
 
     const options: HealthInputOptions = {
       date: date.toISOString(),
@@ -366,13 +368,8 @@ const useHealthData = (date: Date) => {
 
     // BMI
     console.log('FETCHING: BMI...');
-    const BMIOptions = {
-      startDate: new Date(date.getFullYear(), date.getMonth(), date.getDate()).toISOString(),
-      endDate: new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1).toISOString(),
-      includeManuallyAdded: true
-    };
     
-    AppleHealthKit.getLatestBmi(BMIOptions, (err: string | null, results: any) => {
+    AppleHealthKit.getLatestBmi({}, (err: string | null, results: any) => {
       if (err) {
         console.log('ERROR: Error getting BMI:', err);
         setBMI({
@@ -613,10 +610,12 @@ const useHealthData = (date: Date) => {
         return;
       }
       
+      console.log('Raw calories results:', JSON.stringify(results, null, 2));
+      
       if (results && results.value !== undefined) {
         console.log('SUCCESS: Calories received:', results.value);
         setCaloriesBurned({
-          value: results.value,
+          value: results.value * 1000, // Convert from kilocalories to calories
           message: '',
         });
       } else {
@@ -654,9 +653,19 @@ const useHealthData = (date: Date) => {
       if (results && results.length > 0) {
         const latestReading = results[0];
         console.log('SUCCESS: Blood glucose received:', latestReading);
+        
+        // Convert to mg/dL if needed (mmol/L to mg/dL conversion: multiply by 18)
+        let glucoseValue = latestReading.value;
+        let glucoseUnit = latestReading.unit;
+        
+        if (glucoseUnit === 'mmol/L') {
+          glucoseValue = glucoseValue * 18; // Convert mmol/L to mg/dL
+          glucoseUnit = 'mg/dL';
+        }
+        
         setBloodGlucose({
-          value: latestReading.value,
-          unit: latestReading.unit,
+          value: glucoseValue,
+          unit: glucoseUnit,
           date: new Date(latestReading.startDate).toLocaleTimeString(),
           message: '',
         });
@@ -697,7 +706,7 @@ const useHealthData = (date: Date) => {
         console.log('SUCCESS: Body fat received:', latestReading);
         setBodyFat({
           value: latestReading.value,
-          unit: '%',
+          unit: latestReading.unit || '%',
           date: new Date(latestReading.startDate).toLocaleTimeString(),
           message: '',
         });
@@ -715,13 +724,11 @@ const useHealthData = (date: Date) => {
     // Muscle Mass
     console.log('FETCHING: Muscle Mass...');
     const muscleMassOptions = {
-      startDate: new Date(date.getFullYear(), date.getMonth(), date.getDate()).toISOString(),
-      endDate: new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1).toISOString(),
       unit: 'kg' as HealthUnit,
       includeManuallyAdded: true
     };
     
-    AppleHealthKit.getLeanBodyMassSamples(muscleMassOptions, (err: string | null, results: any[]) => {
+    AppleHealthKit.getLatestLeanBodyMass(muscleMassOptions, (err: string | null, results: any) => {
       if (err) {
         console.log('ERROR: Error getting muscle mass:', err);
         setMuscleMass({
@@ -733,13 +740,12 @@ const useHealthData = (date: Date) => {
         return;
       }
       
-      if (results && results.length > 0) {
-        const latestReading = results[0];
-        console.log('SUCCESS: Muscle mass received:', latestReading);
+      if (results && results.value !== undefined) {
+        console.log('SUCCESS: Muscle mass received:', results);
         setMuscleMass({
-          value: latestReading.value,
-          unit: 'kg',
-          date: new Date(latestReading.startDate).toLocaleTimeString(),
+          value: results.value,
+          unit: results.unit || 'kg',
+          date: new Date().toLocaleTimeString(),
           message: '',
         });
       } else {
@@ -753,7 +759,13 @@ const useHealthData = (date: Date) => {
       }
     });
 
-  }, [hasPermissions, date]); 
+  }, [hasPermissions, date, refreshTrigger]); 
+
+  // Function to manually refresh data
+  const refreshData = () => {
+    console.log('MANUAL REFRESH: Triggering data refresh...');
+    setRefreshTrigger(prev => prev + 1);
+  };
 
   return { 
     steps, 
@@ -766,7 +778,8 @@ const useHealthData = (date: Date) => {
     workouts, 
     bloodGlucose,
     bodyFat,
-    muscleMass
+    muscleMass,
+    refreshData
   };
 };
 

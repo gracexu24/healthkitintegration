@@ -595,7 +595,7 @@ const useHealthData = (date: Date) => {
     // Calories
     console.log('FETCHING: Calories...');
     const caloriesOptions = {
-      startDate: new Date(date.getFullYear(), date.getMonth(), date.getDate()).toISOString(),
+      startDate: date.toISOString(),
       endDate: new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1).toISOString(),
       includeManuallyAdded: true
     };
@@ -604,7 +604,7 @@ const useHealthData = (date: Date) => {
       if (err) {
         console.log('ERROR: Error getting calories:', err);
         setCaloriesBurned({
-          value: 0 + 1,
+          value: 0,
           message: 'Error fetching calories burned data',
         });
         return;
@@ -612,10 +612,14 @@ const useHealthData = (date: Date) => {
       
       console.log('Raw calories results:', JSON.stringify(results, null, 2));
       
-      if (results && results.value !== undefined) {
+      if (results && results.length > 0 ) {
+        let total = 0; 
+        for (let i = 0; i < results.length; i++) {
+          total += results[i].value; 
+        };
         console.log('SUCCESS: Calories received:', results.value);
         setCaloriesBurned({
-          value: results.value * 1000, // Convert from kilocalories to calories
+          value: total, 
           message: '',
         });
       } else {
